@@ -1,20 +1,20 @@
 /**
  * Venn diagram — fixed equilateral triangle layout.
  *
- * Why equilateral triangle (not law-of-cosines dynamic positioning):
- *   Dynamic pairwise distances can produce triangles where two circles
- *   are too far apart to touch. This is mathematically "correct" for
- *   zero-overlap audiences, but visually wrong for a directional tool
- *   whose job is to show intersection, not separation.
+ * Radius clamping (key constraint):
+ *   The equilateral triangle can simultaneously guarantee
+ *   "no circle engulfs another"  (s > maxR − minR) AND
+ *   "centroid inside every circle" (s < minR × √3) only when
+ *   the radius ratio ≤ 1 + √3 ≈ 2.73.
  *
- * Guarantee: side length s = minRadius × √3 × 0.78
- *   → centroid is at s/√3 ≈ 0.78 × minRadius from each center
- *   → centroid is inside ALL THREE circles (0.78 × minR < minR)
- *   → all three pairs overlap, a common center region always exists
+ *   We clamp at ratio 2.0 (minAllowed = MAX_R / 2 = 48 px).
+ *   This leaves a healthy margin so the classic formula
+ *   s = minR × √3 × 0.78 satisfies both constraints for every
+ *   possible reach combination.
  *
- * Trade-off: when sizes are very different the smaller circles may sit
- * mostly inside the larger one — but that's a valid directional signal
- * (a tiny niche IS largely a subset of a universal audience).
+ * Trade-off: circles smaller than 48 px are drawn slightly larger
+ * than strict proportion — but the Venn always shows meaningful
+ * three-way overlap, which is the point of the tool.
  */
 
 const COLORS = ['#2563EB', '#7C3AED', '#10B981']
@@ -40,11 +40,19 @@ export default function VennDiagram({ selected, theme = 'dark' }) {
 
   const reaches  = selected.map(a => a.reach)
   const maxReach = Math.max(...reaches)
-  const radii    = reaches.map(r => Math.max(22, Math.sqrt(r / maxReach) * MAX_R))
-  const minR     = Math.min(...radii)
+
+  // Proportional radii (square-root scale for perceptual area encoding)
+  // Clamp: smallest circle must be ≥ MAX_R/2 (50% of the largest).
+  // Keeps ratio ≤ 2.0, within the equilateral-triangle guarantee zone.
+  const minAllowed = MAX_R / 2
+  const radii = reaches.map(r => Math.max(minAllowed, Math.sqrt(r / maxReach) * MAX_R))
+  const minR  = Math.min(...radii)
 
   // ── Triangle geometry ──────────────────────────────────────────────────
-  // s < minR × √3 → centroid (at s/√3) inside every circle → 3-way overlap
+  // s = minR × √3 × 0.78  →  centroid at s/√3 = 0.78 × minR < minR
+  //   → centroid inside ALL three circles → 3-way overlap guaranteed
+  // With ratio ≤ 2 clamping, s > maxR − minR is also guaranteed
+  //   → no circle can fully engulf another
   const s    = minR * Math.sqrt(3) * 0.78
   const triH = s * Math.sqrt(3) / 2
 
