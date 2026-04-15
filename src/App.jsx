@@ -7,14 +7,13 @@ import './App.css'
 export default function App() {
   const [selected, setSelected] = useState([])
 
-  function handleSelect(affinity) {
-    if (selected.find(a => a.id === affinity.id)) return
-    if (selected.length >= 3) return
-    setSelected(prev => [...prev, affinity])
-  }
-
-  function handleRemove(id) {
-    setSelected(prev => prev.filter(a => a.id !== id))
+  function handleToggle(affinity) {
+    const exists = selected.some(a => a.id === affinity.id)
+    if (exists) {
+      setSelected(prev => prev.filter(a => a.id !== affinity.id))
+    } else if (selected.length < 3) {
+      setSelected(prev => [...prev, affinity])
+    }
   }
 
   function handleClear() {
@@ -25,8 +24,8 @@ export default function App() {
     <div className="app">
       <Header />
       <div className="app-body">
-        <AffinityExplorer selected={selected} onSelect={handleSelect} />
-        <Pick3Builder selected={selected} onRemove={handleRemove} onClear={handleClear} />
+        <AffinityExplorer selected={selected} onToggle={handleToggle} />
+        <Pick3Builder selected={selected} onToggle={handleToggle} onClear={handleClear} />
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { AFFINITIES, MACRO_TOPICS, TIER_META } from '../data/affinities'
 import './AffinityExplorer.css'
 
-export default function AffinityExplorer({ selected, onSelect }) {
+export default function AffinityExplorer({ selected, onToggle }) {
   const [search, setSearch] = useState('')
   const [activeTopic, setActiveTopic] = useState('All')
   const [expandedTopics, setExpandedTopics] = useState(() => new Set(MACRO_TOPICS))
@@ -21,7 +21,6 @@ export default function AffinityExplorer({ selected, onSelect }) {
     })
   }, [search, activeTopic])
 
-  // Group filtered results by macroTopic
   const grouped = useMemo(() => {
     const map = new Map()
     for (const a of filtered) {
@@ -45,7 +44,6 @@ export default function AffinityExplorer({ selected, onSelect }) {
 
   return (
     <div className="explorer">
-      {/* Search */}
       <div className="explorer-search-row">
         <div className="search-wrap">
           <svg className="search-icon" viewBox="0 0 20 20" fill="none">
@@ -65,7 +63,6 @@ export default function AffinityExplorer({ selected, onSelect }) {
         </div>
       </div>
 
-      {/* Topic filter pills */}
       <div className="topic-pills">
         {topics.map(t => (
           <button
@@ -82,13 +79,11 @@ export default function AffinityExplorer({ selected, onSelect }) {
         ))}
       </div>
 
-      {/* Results count */}
       <div className="explorer-meta">
         <span>{filtered.length} affinities</span>
-        {isFull && <span className="meta-full">Pick 3 full — remove one to swap</span>}
+        {isFull && <span className="meta-full">Pick 3 full — click any selected to swap</span>}
       </div>
 
-      {/* Grouped affinity list */}
       <div className="explorer-groups">
         {visibleTopics.length === 0 && (
           <div className="explorer-empty">No affinities match "{search}"</div>
@@ -98,7 +93,6 @@ export default function AffinityExplorer({ selected, onSelect }) {
           const isExpanded = expandedTopics.has(topic)
           return (
             <div key={topic} className="topic-group">
-              {/* Tier 1 header */}
               <button className="topic-group-header" onClick={() => toggleTopic(topic)}>
                 <div className="topic-group-header-left">
                   <span className="topic-group-label">TIER 1</span>
@@ -113,11 +107,11 @@ export default function AffinityExplorer({ selected, onSelect }) {
                 </svg>
               </button>
 
-              {/* Tier 2 affinity cards */}
               {isExpanded && (
                 <div className="affinity-grid">
                   {affinities.map(a => {
                     const isSelected = selectedIds.has(a.id)
+                    // Disabled only when full AND not already selected
                     const isDisabled = isFull && !isSelected
                     const tierColor = TIER_META[a.tier]?.color ?? '#64748B'
                     const tierLabel = TIER_META[a.tier]?.label ?? ''
@@ -125,13 +119,10 @@ export default function AffinityExplorer({ selected, onSelect }) {
                       <button
                         key={a.id}
                         className={`affinity-card${isSelected ? ' selected' : ''}${isDisabled ? ' disabled' : ''}`}
-                        onClick={() => !isDisabled && onSelect(a)}
-                        disabled={isDisabled}
-                        title={isDisabled ? 'Remove a selection first' : `Add ${a.affinity}`}
+                        onClick={() => !isDisabled && onToggle(a)}
+                        title={isSelected ? `Remove ${a.affinity}` : isDisabled ? 'Remove a selection first' : `Add ${a.affinity}`}
                       >
-                        {isSelected && (
-                          <span className="card-check">✓</span>
-                        )}
+                        {isSelected && <span className="card-check">✓</span>}
                         <div className="card-tier-dot" style={{ background: tierColor }} />
                         <div className="card-body">
                           <div className="card-name">{a.affinity}</div>
