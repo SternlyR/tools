@@ -4,6 +4,7 @@
   padding: 0;
 }
 
+/* ── Dark theme (default) ───────────────────────────────────────────────── */
 :root {
   --hc-blue:      #2563EB;
   --hc-blue-dim:  rgba(37, 99, 235, 0.12);
@@ -18,6 +19,34 @@
 
   --text-primary: #F0F0F8;
   --text-muted:   #6B7280;
+
+  --pill-bg:      var(--surface-2);
+  --pill-border:  var(--border);
+  --pill-color:   var(--text-muted);
+  --card-bg:      var(--surface-2);
+  --card-hover:   var(--surface-3);
+  --input-bg:     var(--surface-2);
+}
+
+/* ── Light theme ────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:           #F4F4F8;
+  --surface-1:    #FFFFFF;
+  --surface-2:    #F0F0F6;
+  --surface-3:    #E4E4EE;
+
+  --border:       #D8D8E8;
+  --border-active:#B0B0CC;
+
+  --text-primary: #0A0A14;
+  --text-muted:   #6B7280;
+
+  --pill-bg:      #FFFFFF;
+  --pill-border:  #D8D8E8;
+  --pill-color:   #6B7280;
+  --card-bg:      #FFFFFF;
+  --card-hover:   #F0F0F6;
+  --input-bg:     #FFFFFF;
 }
 
 html, body, #root {
@@ -33,25 +62,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-button {
-  cursor: pointer;
-}
+button { cursor: pointer; }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-active);
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-active); }

@@ -5,7 +5,8 @@ import Pick3Builder from './components/Pick3Builder'
 import './App.css'
 
 export default function App() {
-  const [selected, setSelected] = useState([])
+  const [selected, setSelected]   = useState([])
+  const [appTheme, setAppTheme]   = useState('dark')
 
   function handleToggle(affinity) {
     const exists = selected.some(a => a.id === affinity.id)
@@ -16,13 +17,15 @@ export default function App() {
     }
   }
 
-  function handleClear() {
-    setSelected([])
+  function handleClear() { setSelected([]) }
+
+  function toggleTheme() {
+    setAppTheme(t => t === 'dark' ? 'light' : 'dark')
   }
 
   return (
-    <div className="app">
-      <Header />
+    <div className="app" data-theme={appTheme}>
+      <Header theme={appTheme} onThemeToggle={toggleTheme} />
       <div className="app-body">
         <AffinityExplorer selected={selected} onToggle={handleToggle} />
         <Pick3Builder selected={selected} onToggle={handleToggle} onClear={handleClear} />
