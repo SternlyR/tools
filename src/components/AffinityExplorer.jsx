@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { AFFINITIES, MACRO_TOPICS, TIER_META } from '../data/affinities'
 import './AffinityExplorer.css'
 
-const TIERS = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+const TIERS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 export default function AffinityExplorer({ selected, onToggle }) {
   const [search,         setSearch]         = useState('')
