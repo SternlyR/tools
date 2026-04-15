@@ -1,31 +1,45 @@
 /**
  * SVG Venn diagram — 3 proportionally-sized circles in a triangular arrangement.
- * Circle radius is scaled by sqrt(reach / maxReach) so area represents audience size.
- * Circles use mix-blend-mode: screen for a clean overlap effect on dark bg.
+ * Radius is sqrt-scaled so area ∝ audience size.
+ * Labels are placed in the exclusive (non-overlapping) zone of each circle
+ * and word-wrapped to prevent edge clipping.
  */
 const COLORS = ['#2563EB', '#7C3AED', '#10B981']
-const MAX_R = 110   // max radius in px
-const W = 360
-const H = 280
+const MAX_R = 108
+const W = 520
+const H = 330
+
+// Label anchor points — fixed safe positions in each circle's exclusive zone,
+// far enough from SVG edges that even long wrapped names stay within bounds.
+const LABEL_POS = [
+  { x: 120, y: 100 }, // left circle  → upper-left safe zone
+  { x: 400, y: 100 }, // right circle → upper-right safe zone
+  { x: 260, y: 295 }, // bottom circle → lower-center safe zone
+]
+
+// Break a name into 1–2 lines, splitting near the midpoint on a space.
+function wrapName(name) {
+  const MAX = 16
+  if (name.length <= MAX) return [name]
+  const mid = Math.floor(name.length / 2)
+  for (let d = 0; d <= 8; d++) {
+    if (name[mid - d] === ' ') return [name.slice(0, mid - d), name.slice(mid - d + 1)]
+    if (name[mid + d] === ' ') return [name.slice(0, mid + d), name.slice(mid + d + 1)]
+  }
+  // No good split found — hard-truncate
+  return [name.slice(0, MAX - 1) + '…']
+}
 
 export default function VennDiagram({ selected }) {
   if (selected.length !== 3) return null
 
   const maxReach = Math.max(...selected.map(a => a.reach))
-
-  // Compute radii
-  const radii = selected.map(a => Math.max(30, Math.sqrt(a.reach / maxReach) * MAX_R))
-
-  // Fixed triangle positions — top-left, top-right, bottom-center
-  // We offset slightly based on relative radius so smaller circles don't get swamped
-  const cx = W / 2
-  const cy = H / 2
-  const spread = 72
+  const radii = selected.map(a => Math.max(28, Math.sqrt(a.reach / maxReach) * MAX_R))
 
   const positions = [
-    { x: cx - spread, y: cy - 28 },   // left
-    { x: cx + spread, y: cy - 28 },   // right
-    { x: cx,          y: cy + 52 },   // bottom
+    { x: 172, y: 150 }, // left
+    { x: 348, y: 150 }, // right
+    { x: 260, y: 230 }, // bottom
   ]
 
   return (
@@ -37,7 +51,7 @@ export default function VennDiagram({ selected }) {
     >
       <rect width={W} height={H} fill="#0D0D14" rx="8" />
 
-      {/* Circles with blend mode */}
+      {/* Filled circles with screen blend for visible overlaps */}
       <g style={{ mixBlendMode: 'screen' }}>
         {selected.map((a, i) => (
           <circle
@@ -61,39 +75,36 @@ export default function VennDiagram({ selected }) {
           fill="none"
           stroke={COLORS[i]}
           strokeWidth={1.5}
-          opacity={0.7}
+          opacity={0.75}
         />
       ))}
 
-      {/* Labels — placed near edge of each circle away from center */}
+      {/* Labels — anchored at safe fixed positions, word-wrapped */}
       {selected.map((a, i) => {
-        const offsets = [
-          { dx: -radii[i] * 0.55, dy: -radii[i] * 0.55 },
-          { dx:  radii[i] * 0.55, dy: -radii[i] * 0.55 },
-          { dx:  0,                dy:  radii[i] * 0.65  },
-        ]
-        const lx = positions[i].x + offsets[i].dx
-        const ly = positions[i].y + offsets[i].dy
-
-        // Truncate long names
-        const name = a.affinity.length > 18 ? a.affinity.slice(0, 17) + '…' : a.affinity
+        const lines = wrapName(a.affinity)
+        const lx = LABEL_POS[i].x
+        const ly = LABEL_POS[i].y
+        const lineHeight = 14
 
         return (
           <g key={`label-${a.id}`}>
+            {lines.map((line, li) => (
+              <text
+                key={li}
+                x={lx}
+                y={ly + li * lineHeight}
+                textAnchor="middle"
+                fill={COLORS[i]}
+                fontSize="11"
+                fontWeight="700"
+                fontFamily="Inter, sans-serif"
+              >
+                {line}
+              </text>
+            ))}
             <text
               x={lx}
-              y={ly - 6}
-              textAnchor="middle"
-              fill={COLORS[i]}
-              fontSize="11"
-              fontWeight="700"
-              fontFamily="Inter, sans-serif"
-            >
-              {name}
-            </text>
-            <text
-              x={lx}
-              y={ly + 9}
+              y={ly + lines.length * lineHeight + 2}
               textAnchor="middle"
               fill="rgba(255,255,255,0.7)"
               fontSize="11"
