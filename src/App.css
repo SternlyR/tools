@@ -1,3 +1,91 @@
+/* ── Password gate ────────────────────────────────────────────────────── */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0D0D14;
+}
+
+.gate-card {
+  background: #111118;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gate-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.gate-brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #F0F0F8;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.gate-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #F0F0F8;
+  margin: 0 0 20px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gate-input {
+  background: #0D0D14;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #F0F0F8;
+  font-size: 15px;
+  font-family: Inter, system-ui, sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.gate-input:focus { border-color: #2563EB; }
+.gate-input-error { border-color: #EF4444 !important; }
+
+.gate-error {
+  color: #EF4444;
+  font-size: 13px;
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.gate-btn {
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Inter, system-ui, sans-serif;
+  transition: background 0.15s;
+}
+
+.gate-btn:hover { background: #1d4ed8; }
+
+/* ── App shell ────────────────────────────────────────────────────────── */
 .app {
   height: 100vh;
   display: flex;
