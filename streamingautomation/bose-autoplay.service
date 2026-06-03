@@ -1,0 +1,16 @@
+[Unit]
+Description=Bose Soundlink auto-stream (freaksonly.fm)
+After=bluetooth.service pulseaudio.service network-online.target
+Wants=bluetooth.service pulseaudio.service network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/opt/streamingautomation/config.env
+ExecStart=/usr/bin/python3 /opt/streamingautomation/bose_autoplay.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
